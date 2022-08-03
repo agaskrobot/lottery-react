@@ -1,9 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { contractABI, contractAddress } from "./utils/constants";
+import "./App.css";
+import { ethers } from "ethers";
+
+const { ethereum } = window;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const [manager, setManager] = useState("");
+
+  useEffect(() => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    const lotteryContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+
+    const getManager = async () => {
+      const manager = await lotteryContract.manager();
+
+      setManager(manager);
+    };
+    getManager();
+  }, []);
 
   return (
     <div className="App">
@@ -28,7 +50,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
